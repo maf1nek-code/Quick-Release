@@ -1,7 +1,7 @@
 # FFBeast – wsuwany Quick Release (klin V + jaskółczy ogon)
 
-Stan: **model CAD gotowy i sprawdzony geometrycznie w Fusion 360. Nic nie zostało wydrukowane ani przetestowane fizycznie.**
-Wszystkie liczby wytrzymałościowe poniżej to szacunki ręczne, nie wyniki testów ani MES.
+Stan: **wydrukowany i działa.** Prototyp z plików w tym repo jest zamontowany na kierownicy i sprawdza się w praktyce.
+Liczby wytrzymałościowe poniżej to nadal szacunki ręczne, nie wyniki pomiarów ani MES.
 
 ## Pliki
 
@@ -148,9 +148,11 @@ Sprawdzone skryptem `verify_qr.py` na gotowym modelu:
 - podniesienie B w osi przy wysunięciu 0–12 mm daje kolizję, od 14 mm jest wolne;
 - śruba Tr11×3 w gwincie Tr12×3 obraca się bez kolizji w oknie ±20° (luz osiowy ok. 0,3 mm – celowy, pod druk).
 
-Nie sprawdzone: wytrzymałość, sztywność, rzeczywiste pasowanie po wydruku, zachowanie pod FFB.
+Po wydruku: pasowanie i działanie potwierdzone na prototypie. Wytrzymałość i sztywność nie były mierzone – liczby z pkt 6 to szacunki.
 
-## 8. Plan testów prototypu
+## 8. Testy po wydrukowaniu
+
+Prototyp przeszedł próby w praktyce. Jeśli drukujesz własny egzemplarz (inna drukarka, inny filament), przejdź te kroki – tolerancje druku różnią się między drukarkami.
 
 1. **Pasowanie na sucho, bez silnika.** Wsuń B w A ręką. Zmierz szczelinę między czołem pióra a ścianą wieżyczki: powinna wynosić 2–3 mm. Poniżej 1 mm → zwiększ `fit_clr` o 0,05–0,10 i wydrukuj B ponownie. Powyżej 4 mm → zmniejsz.
 2. **Śruba.** Musi wkręcać się palcami na całej długości. Jeśli się zacina, przeskaluj C w slicerze do 97–98 % w osiach X i Z.
@@ -162,10 +164,9 @@ Nie sprawdzone: wytrzymałość, sztywność, rzeczywiste pasowanie po wydruku, 
 
 Podczas prób pod napięciem nie trzymaj palców przy mechanizmie i pokrętle. Przerwij test, jeśli pojawi się stuk, luz, biała rysa albo śruba daje się dokręcić wyraźnie dalej niż poprzednio.
 
-## Do potwierdzenia
+## Sprawdź przed drukiem dla własnej kierownicy
 
-1. **Która flansza jest zamontowana** – `flansza (3)` czy `flansza2`? Projekt pasuje do obu (ten sam rozstaw), ale warto to wiedzieć.
-2. **Czy śruby kierownicy to M5.** Wynika to tylko ze szczelin na nakrętki w STL. Jeśli to M6, trzeba zmienić `a_hole_d`, `a_cbore_d`, `b_hole_d`, `b_nut_af`.
-3. **Ile śruby wystają za tył kierownicy** (potrzebne 8–10 mm).
-4. **Czy tył kierownicy jest płaski na średnicy 86 mm** i czy nic nie wystaje ze środka.
-5. **Maksymalny moment ustawiony w FFBeast.**
+1. **Flansza** – projekt pasuje do `flansza (3)` i `flansza2` (ten sam rozstaw 6 otworów na Ø70).
+2. **Śruby kierownicy to M5.** Jeśli masz M6, zmień `a_hole_d`, `a_cbore_d`, `b_hole_d`, `b_nut_af` w `build_qr.py`.
+3. **Śruby wystają za tył kierownicy najwyżej 8–10 mm.**
+4. **Tył kierownicy jest płaski na średnicy 86 mm** i nic nie wystaje ze środka.
