@@ -1,172 +1,172 @@
-# FFBeast – wsuwany Quick Release (klin V + jaskółczy ogon)
+# FFBeast – slide-in Quick Release (V wedge + dovetail)
 
-Stan: **wydrukowany i działa.** Prototyp z plików w tym repo jest zamontowany na kierownicy i sprawdza się w praktyce.
-Liczby wytrzymałościowe poniżej to nadal szacunki ręczne, nie wyniki pomiarów ani MES.
+Status: **printed and working.** A prototype made from the files in this repository is mounted on my wheel and works well in practice.
+The strength figures below are still hand estimates, not measurements or FEA results.
 
-## Pliki
+## Files
 
-| Plik | Co to jest |
+| File | What it is |
 |---|---|
-| `cad/FFBeast_QR.f3d` | projekt Fusion 360 (3 komponenty, 74 operacje na osi czasu, parametry użytkownika `qr_*`) |
-| `cad/FFBeast_QR.step` | to samo jako STEP |
-| `cad/build_qr.py` | skrypt-generator: zmieniasz wartości w słowniku `P` i uruchamiasz w Fusion – buduje cały zespół od nowa |
-| `cad/verify_qr.py` | skrypt kontroli kolizji i dopasowania (tylko odczyt) |
-| `stl/A_baza_QR.stl` | część A, już w orientacji do druku |
-| `stl/B_adapter_kierownicy.stl` | część B, już w orientacji do druku (odwrócona, strona kierownicy na stole) |
-| `stl/C_sruba_blokujaca.stl` | śruba blokująca, już w orientacji do druku (na leżąco) |
-| `img/*.png` | widoki z Fusion |
+| `cad/FFBeast_QR.f3d` | Fusion 360 project (3 components, 74 timeline features, user parameters `qr_*`) |
+| `cad/FFBeast_QR.step` | the same as STEP |
+| `cad/build_qr.py` | generator script: change the values in the `P` dictionary and run it in Fusion – it rebuilds the whole assembly from scratch |
+| `cad/verify_qr.py` | collision and fit check script (read only) |
+| `stl/A_base_QR.stl` | part A, already oriented for printing |
+| `stl/B_wheel_adapter.stl` | part B, already oriented for printing (upside down, wheel side on the bed) |
+| `stl/C_locking_screw.stl` | locking screw, already oriented for printing (lying down) |
+| `img/*.png` | views from Fusion |
 
-Uwaga do parametrów: parametry `qr_*` w Fusion są listą wartości, a szkice są liczone przez skrypt.
-Żeby zmienić wymiar, edytuj `P` w `build_qr.py` i uruchom skrypt ponownie (ok. 20 s) – to jest właściwe źródło parametryczne.
+A note on parameters: the `qr_*` parameters in Fusion are a list of values, while the sketches are computed by the script.
+To change a dimension, edit `P` in `build_qr.py` and run the script again (about 20 s) – that is the real parametric source.
 
-## 1. Analiza dostarczonych STL
+## 1. Analysis of the existing STL files
 
-W folderze były trzy pliki. Wszystkie mają ten sam interfejs: **6 otworów na okręgu Ø70,00 mm co 60°**.
+The folder had three files. They all share the same interface: **6 holes on a Ø70.00 mm circle, 60° apart**.
 
-| Plik | Gabaryt | Otwory na Ø70 | Reszta |
+| File | Size | Holes on Ø70 | Other features |
 |---|---|---|---|
-| `flansza (3).stl` | Ø85 (kołnierz Ø88) × 30,4 mm | 12 × Ø6,27 co 30° (dwa zestawy po 6) | szczeliny na nakrętki 8,3 × 4,3 mm (pasują do M5), 4,5 mm pod czołem; otwór środkowy Ø35 / Ø50; 4 × Ø3 na Ø42 |
-| `flansza2 (1).stl` | Ø83 × 76 mm | podstawa 15 mm: 12 × Ø7; górny kołnierz 6 mm: 6 × Ø5 | tuleja Ø60 / Ø50 |
-| `Wzor do wiercenia otworow.stl` | Ø80 × 11 mm | 6 × Ø5 + Ø5 w środku | szablon |
+| `flange_a.stl` | Ø85 (Ø88 collar) × 30.4 mm | 12 × Ø6.27 every 30° (two sets of 6) | nut slots 8.3 × 4.3 mm (fit M5), 4.5 mm below the face; centre bore Ø35 / Ø50; 4 × Ø3 on Ø42 |
+| `flange_b.stl` | Ø83 × 76 mm | 15 mm base: 12 × Ø7; 6 mm top collar: 6 × Ø5 | sleeve Ø60 / Ø50 |
+| `drilling_template.stl` | Ø80 × 11 mm | 6 × Ø5 + Ø5 in the centre | drilling template |
 
-Czego STL **nie** mówi i co trzeba potwierdzić – patrz „Do potwierdzenia” na końcu.
+What the STL files **don't** tell you and what you need to check – see "Check before printing for your wheel" at the end.
 
-## 2. Wybrana konstrukcja
+## 2. Chosen design
 
-![zespół](img/zespol.png)
+![assembly](img/assembly.png)
 
-- **Część A (baza)** – dysk Ø86 × 16 mm przykręcony 6 śrubami do flanszy. Ma kanał w kształcie litery V z podciętymi ścianami oraz wieżyczkę ze śrubą blokującą.
-- **Część B (adapter kierownicy)** – dysk Ø86 × 10 mm z piórem w kształcie V pasującym do kanału; przykręcony do kierownicy jej obecnymi śrubami.
-- **Część C (śruba blokująca)** – drukowana, gwint trapezowy, skok 3 mm. Wciąga pióro w klin i trzyma je tam.
+- **Part A (base)** – a Ø86 × 16 mm disc screwed to the flange with 6 screws. It has a V-shaped channel with undercut walls and a tower with the locking screw.
+- **Part B (wheel adapter)** – a Ø86 × 10 mm disc with a V-shaped tongue that fits the channel; screwed to the wheel with the wheel's existing screws.
+- **Part C (locking screw)** – printed, trapezoidal thread with a 3 mm pitch. It pulls the tongue into the wedge and holds it there.
 
-Kierownica odsuwa się od flanszy o **26 mm**.
+The wheel sits **26 mm** further out from the flange.
 
-Jak to działa:
-1. Kanał zwęża się w planie (półkąt 14°). Pióro wsuwa się w niego aż oprze się **obiema** ścianami naraz – luz boczny i obrotowy znika niezależnie od dokładności druku.
-2. Ściany są podcięte o 35° (jaskółczy ogon), więc dociśnięcie klina jednocześnie ściąga płytę B do powierzchni A – znika luz osiowy.
-3. Śruba ciągnie pióro w głąb klina i jest jedynym elementem, który nie pozwala mu się cofnąć. Klin 14° **nie jest samohamowny** – celowo: mały kąt dawałby samohamowność, ale każda 0,1 mm błędu druku przesuwałaby kierownicę z osi o ok. 2 mm.
+How it works:
+1. The channel narrows in plan view (14° half-angle). The tongue slides in until it touches **both** walls at once – side and rotational play disappear regardless of print accuracy.
+2. The walls are undercut by 35° (dovetail), so pushing the wedge in also pulls plate B down onto A – axial play disappears.
+3. The screw pulls the tongue deeper into the wedge and is the only thing that stops it from backing out. The 14° wedge is **not self-locking** – on purpose: a small angle would be self-locking, but every 0.1 mm of print error would move the wheel off-axis by about 2 mm.
 
-### Porównanie rozważanych geometrii
+### Geometries considered
 
-| Geometria | Luz | Ocena |
+| Geometry | Play | Verdict |
 |---|---|---|
-| Równoległy jaskółczy ogon | zawsze zostaje luz druku (0,1–0,2 mm) | odrzucony |
-| Jaskółczy ogon z listwą dociskową | zero, ale kilka śrub do regulacji | odrzucony – za dużo części |
-| Płaski klin bez podcięcia | zero w planie, ale nic nie trzyma osiowo | odrzucony |
-| Klin o małym kącie (3–5°) | zero, samohamowny | odrzucony – położenie osi zbyt czułe na tolerancję druku |
-| **Klin V 14° + podcięcie 35°** | zero w trzech kierunkach, pozycja powtarzalna (0,1 mm błędu → 0,4 mm w osi Y) | **wybrany** |
+| Parallel dovetail | print play always remains (0.1–0.2 mm) | rejected |
+| Dovetail with a clamping strip | zero, but several screws to adjust | rejected – too many parts |
+| Flat wedge without undercut | zero in plan, but nothing holds it axially | rejected |
+| Small-angle wedge (3–5°) | zero, self-locking | rejected – axis position too sensitive to print tolerance |
+| **14° V wedge + 35° undercut** | zero in three directions, repeatable position (0.1 mm error → 0.4 mm along Y) | **chosen** |
 
-### Blokada – dlaczego śruba i dlaczego z boku
+### Lock – why a screw and why from the side
 
-- Śruba przez sam środek w osi kierownicy nie da się obsłużyć: od przodu zasłania ją kierownica, od tyłu silnik.
-- Zatrzask i dźwignię wykluczyłeś; blokada bez regulacji nie kasuje zużycia.
-- Śruba biegnie więc **w kierunku wsuwania**, przez środek mechanizmu, a pokrętło wystaje promieniowo z bazy.
-- Jest w całości drukowana. Ma szyjkę i krótki gwint w wieżyczce, dzięki czemu po odkręceniu **nie wypada** z bazy.
-- Metalowej śruby do blokady nie trzeba kupować. Jest to jednak najsłabszy element zespołu (patrz pkt 6).
+- A screw through the centre, on the wheel axis, can't be reached: the wheel blocks it from the front and the motor from the back.
+- A latch or a lever was ruled out; a lock without adjustment can't take up wear.
+- So the screw runs **in the slide-in direction**, through the middle of the mechanism, and the knob sticks out radially from the base.
+- It is fully printed. It has a neck and a short thread in the tower, so once unscrewed it **does not fall out** of the base.
+- No metal screw is needed for the lock. It is, however, the weakest part of the assembly (see section 6).
 
-## 3. Co trzeba dokupić
+## 3. What you need to buy
 
-Nie da się tego uniknąć przy dwóch częściach: obecne 6 śrub trzyma kierownicę, a baza też musi być czymś przykręcona.
+This can't be avoided with two parts: the existing 6 screws hold the wheel, and the base also has to be screwed to something.
 
-| Ilość | Element | Do czego |
+| Qty | Item | Used for |
 |---|---|---|
-| 6 | śruba **M5 × 16, łeb kulisty ISO 7380** | część A → flansza (wchodzą w obecne nakrętki flanszy) |
-| 6 | nakrętka M5 (DIN 934) | gniazda w części B |
+| 6 | **M5 × 16 button head screw, ISO 7380** | part A → flange (go into the flange's existing nuts) |
+| 6 | M5 nut (DIN 934) | pockets in part B |
 
-Łeb kulisty jest konieczny w dwóch otworach leżących w dnie kanału (pod łbem zostaje 4,8 mm materiału). Zwykły łeb walcowy M5 tam się nie zmieści.
+The button head is required for the two holes that sit in the channel floor (only 4.8 mm of material under the head). A regular M5 socket head won't fit there.
 
-## 4. Montaż
+## 4. Assembly
 
-**Część A**
-1. Odkręć kierownicę. Nakrętki we flanszy zostają.
-2. Przyłóż A płaską stroną do flanszy, wieżyczką **w dół**.
-3. Wkręć 6 śrub M5 × 16 na krzyż, lekko. Wyrównaj A z obrzeżem flanszy na całym obwodzie, potem dokręć. Nie dociągaj na siłę – to PETG.
-4. Wkręć śrubę C w wieżyczkę, aż gwint przejdzie przez krótki gwint wejściowy i śruba zacznie się swobodnie przesuwać.
+**Part A**
+1. Remove the wheel. The nuts stay in the flange.
+2. Put A flat side against the flange, tower **down**.
+3. Insert the 6 M5 × 16 screws and tighten them lightly in a cross pattern. Align A with the flange rim all the way round, then tighten. Don't overtighten – it's PETG.
+4. Screw C into the tower until the thread passes the short entry thread and the screw slides freely.
 
-**Część B**
-1. Włóż 6 nakrętek M5 w gniazda (strona z piórem).
-2. Przyłóż B gładką stroną do tyłu kierownicy.
-3. Przykręć obecnymi śrubami kierownicy. **Końce śrub nie mogą wystawać ponad powierzchnię z gniazdami** – inaczej B nie wsunie się na A. Dopuszczalne wystawanie śruby za tył kierownicy: 8–10 mm. Jeśli jest większe, daj podkładki pod łby albo krótsze śruby.
+**Part B**
+1. Put the 6 M5 nuts into the pockets (tongue side).
+2. Put the smooth side of B against the back of the wheel.
+3. Screw it on with the wheel's existing screws. **The screw ends must not stick out above the pocket face** – otherwise B won't slide onto A. Screws may stick out of the back of the wheel by 8–10 mm. If they stick out more, add washers under the heads or use shorter screws.
 
-**Zakładanie kierownicy**
-1. Odkręć śrubę C do oporu (ok. 3,5 obrotu).
-2. Przyłóż kierownicę ok. 15 mm powyżej pozycji końcowej – pióro wpada w szeroką część kanału.
-3. Zsuń w dół do oporu.
-4. Dokręć śrubę C palcami, do wyraźnego oporu.
+**Mounting the wheel**
+1. Back screw C out all the way (about 3.5 turns).
+2. Hold the wheel about 15 mm above its final position – the tongue drops into the wide part of the channel.
+3. Slide it down until it stops.
+4. Tighten screw C by hand until you feel clear resistance.
 
-**Zdejmowanie:** odkręć C aż przestanie trzymać, przesuń kierownicę ok. 15 mm w górę, zdejmij do siebie.
+**Removing:** loosen C until it no longer holds, slide the wheel up about 15 mm, pull it towards you.
 
-## 5. Parametry druku (Ender 3 V3, dysza 0,4)
+## 5. Print settings (Ender 3 V3, 0.4 nozzle)
 
-| | A – baza | B – adapter | C – śruba |
+| | A – base | B – adapter | C – screw |
 |---|---|---|---|
-| Materiał | PETG | PETG | PETG |
-| Orientacja | jak w STL: płaska strona na stole | jak w STL: strona kierownicy na stole, pióro do góry | jak w STL: na leżąco, na ściętej płaszczyźnie |
-| Warstwa | 0,20 mm | 0,20 mm | 0,12–0,16 mm |
-| Ścianki | 6 | 6 | 6 |
-| Góra / dół | 6 / 6 | 6 / 6 | – |
-| Wypełnienie | 60 % gyroid | 60 % gyroid | 100 % |
-| Podpory | brak | brak | brak; brim 5 mm |
-| Filament (szac.) | ok. 75–80 g | ok. 68–72 g | ok. 5 g |
-| Czas (szac.) | ok. 3–3,5 h | ok. 3 h | ok. 25 min |
+| Material | PETG | PETG | PETG |
+| Orientation | as in the STL: flat side on the bed | as in the STL: wheel side on the bed, tongue up | as in the STL: lying down, on the cut flat |
+| Layer | 0.20 mm | 0.20 mm | 0.12–0.16 mm |
+| Walls | 6 | 6 | 6 |
+| Top / bottom | 6 / 6 | 6 / 6 | – |
+| Infill | 60 % gyroid | 60 % gyroid | 100 % |
+| Supports | none | none | none; 5 mm brim |
+| Filament (est.) | about 75–80 g | about 68–72 g | about 5 g |
+| Time (est.) | about 3–3.5 h | about 3 h | about 25 min |
 
-- Temperatura 240–250 °C, stół 80 °C, chłodzenie 30–50 % – ważniejsze jest zespolenie warstw niż wygląd.
-- Czas i masa to szacunek z objętości (A 69,1 cm³, B 61,6 cm³, C 3,6 cm³); dokładne wartości poda slicer.
-- PLA nie używaj: pełza pod stałym naciskiem klina i mięknie przy ok. 55 °C. TPU nie jest tu potrzebne.
-- Śruba C musi być drukowana na leżąco. Na stojąco warstwy byłyby w poprzek rozciągania i szyjka by pękła.
+- 240–250 °C, bed 80 °C, cooling 30–50 % – layer bonding matters more than looks.
+- Time and weight are estimated from the volume (A 69.1 cm³, B 61.6 cm³, C 3.6 cm³); your slicer will give exact values.
+- Don't use PLA: it creeps under the constant load of the wedge and softens at about 55 °C. TPU isn't needed here.
+- Screw C must be printed lying down. Printed upright, the layers would be across the pulling direction and the neck would snap.
 
-Kierunek warstw: w A i B warstwy są prostopadłe do osi kierownicy. Moment obrotowy idzie wzdłuż warstw (mocny kierunek). Odrywanie kierownicy od bazy rozciąga warstwy pióra w poprzek (słaby kierunek) – dlatego szyjka pióra ma ok. 1300 mm² przekroju.
+Layer direction: in A and B the layers are perpendicular to the wheel axis. Torque runs along the layers (the strong direction). Pulling the wheel off the base loads the tongue layers across (the weak direction) – that's why the tongue neck has a cross-section of about 1300 mm².
 
-## 6. Szacunek obciążeń i punkty awarii
+## 6. Load estimate and failure points
 
-Założenia: moment 15 N·m, siła na obręczy 150 N na promieniu 150 mm (22,5 N·m zginania).
+Assumptions: 15 N·m of torque, 150 N on the rim at a 150 mm radius (22.5 N·m of bending).
 
-| Miejsce | Szacunek | Uwagi |
+| Location | Estimate | Notes |
 |---|---|---|
-| Ściany klina – moment obrotowy | ok. 1,5–2 MPa nacisku | duży zapas |
-| Szyjka pióra – odrywanie (w poprzek warstw) | ok. 1,5–2 MPa | PETG między warstwami wytrzymuje statycznie 15–25 MPa; zależy od jakości druku |
-| Ściany klina – odrywanie | ok. 3–4 MPa nacisku | podcięcie 35° zwielokrotnia siłę ok. 1,7× |
-| **Śruba C – rdzeń Ø7,5 (44 mm²)** | przy 500 N ok. 11 MPa | **najsłabszy element**; zapas statyczny ok. 3–4×, na zmęczenie i pełzanie mniejszy |
-| Gwint śruby (3 zwoje w zazębieniu) | ok. 4–5 MPa | – |
-| Pod łbami śrub A w dnie kanału (4,8 mm) | – | nie dociągać na siłę |
+| Wedge walls – torque | about 1.5–2 MPa contact pressure | large margin |
+| Tongue neck – pull-off (across layers) | about 1.5–2 MPa | PETG between layers holds 15–25 MPa statically; depends on print quality |
+| Wedge walls – pull-off | about 3–4 MPa contact pressure | the 35° undercut multiplies the force by about 1.7× |
+| **Screw C – Ø7.5 core (44 mm²)** | about 11 MPa at 500 N | **weakest part**; static margin about 3–4×, less for fatigue and creep |
+| Screw thread (3 turns engaged) | about 4–5 MPa | – |
+| Under the A screw heads in the channel floor (4.8 mm) | – | don't overtighten |
 
-Co się stanie, gdy coś zawiedzie:
-- **Pęknie lub odkręci się śruba C** → kierownica może wysunąć się w górę o 15 mm i wtedy zejść z bazy. Nic poza śrubą jej wtedy nie trzyma.
-- **Rozwarstwi się pióro B** → kierownica odpada razem z płytą.
-- **Pełzanie PETG** → po kilku dniach śruba będzie luźniejsza; trzeba ją dociągać.
-- **Zużycie ścian klina** → pióro siada głębiej; zapas wynosi 3 mm, potem pióro oprze się o ścianę końcową i pojawi się luz.
+What happens if something fails:
+- **Screw C snaps or comes loose** → the wheel can slide up by 15 mm and then come off the base. Nothing but the screw holds it then.
+- **Tongue B delaminates** → the wheel comes off together with the plate.
+- **PETG creep** → after a few days the screw will be looser; it needs retightening.
+- **Wedge wall wear** → the tongue seats deeper; there's 3 mm of reserve, after that the tongue hits the end wall and play appears.
 
-Jeżeli śruba C okaże się za słaba, sensowną poprawką jest metalowa śruba M5/M6 z nakrętką w piórze – wymaga zmiany modelu.
+If screw C turns out too weak, a sensible fix is a metal M5/M6 screw with a nut in the tongue – this needs a model change.
 
-## 7. Co zostało sprawdzone w CAD
+## 7. What was checked in CAD
 
-Sprawdzone skryptem `verify_qr.py` na gotowym modelu:
-- każda część to jedna zamknięta bryła, oś czasu bez błędów, STL-e szczelne;
-- kolizja A–B, A–C, B–C w pozycji nominalnej: **0 mm³**;
-- pióro siada w klinie 0,4 mm za pozycją nominalną (zgodnie z założonym luzem 0,10 mm na stronę);
-- w pozycji zamkniętej obrót o 0,5° i przesunięcie boczne o 0,3 mm dają kolizję – połączenie jest kształtowe;
-- podniesienie B w osi przy wysunięciu 0–12 mm daje kolizję, od 14 mm jest wolne;
-- śruba Tr11×3 w gwincie Tr12×3 obraca się bez kolizji w oknie ±20° (luz osiowy ok. 0,3 mm – celowy, pod druk).
+Checked with `verify_qr.py` on the finished model:
+- each part is a single closed solid, the timeline has no errors, the STL files are watertight;
+- A–B, A–C, B–C collision in the nominal position: **0 mm³**;
+- the tongue seats 0.4 mm past the nominal position (as expected with 0.10 mm clearance per side);
+- in the closed position, a 0.5° rotation or a 0.3 mm side shift causes a collision – the joint is form-locked;
+- lifting B along the axis collides at 0–12 mm of slide-out and is free from 14 mm;
+- the Tr11×3 screw turns in the Tr12×3 thread without collision within ±20° (about 0.3 mm axial play – intentional, for printing).
 
-Po wydruku: pasowanie i działanie potwierdzone na prototypie. Wytrzymałość i sztywność nie były mierzone – liczby z pkt 6 to szacunki.
+After printing: fit and function confirmed on the prototype. Strength and stiffness were not measured – the figures in section 6 are estimates.
 
-## 8. Testy po wydrukowaniu
+## 8. Tests after printing
 
-Prototyp przeszedł próby w praktyce. Jeśli drukujesz własny egzemplarz (inna drukarka, inny filament), przejdź te kroki – tolerancje druku różnią się między drukarkami.
+The prototype passed real-world use. If you print your own (different printer, different filament), go through these steps – print tolerances differ between printers.
 
-1. **Pasowanie na sucho, bez silnika.** Wsuń B w A ręką. Zmierz szczelinę między czołem pióra a ścianą wieżyczki: powinna wynosić 2–3 mm. Poniżej 1 mm → zwiększ `fit_clr` o 0,05–0,10 i wydrukuj B ponownie. Powyżej 4 mm → zmniejsz.
-2. **Śruba.** Musi wkręcać się palcami na całej długości. Jeśli się zacina, przeskaluj C w slicerze do 97–98 % w osiach X i Z.
-3. **Luz ręką, silnik wyłączony.** Dokręć C i spróbuj poruszyć kierownicą obrotowo, na boki i do siebie. Nie powinno być wyczuwalnego ruchu ani stuku.
-4. **Próba statyczna, silnik wyłączony.** Obciąż obręcz ok. 5 kg w kilku kierunkach; obejrzyj nasadę pióra i wieżyczkę pod kątem białych rys.
-5. **FFB 10–20 %**, 10 minut, spokojne ruchy. Potem zdejmij kierownicę i obejrzyj ściany klina, śrubę i szczelinę z pkt 1.
-6. **Zwiększaj siłę stopniowo** (30 → 50 → 70 %), po każdym kroku oględziny i sprawdzenie, czy śruba nie poluzowała się.
-7. **Pełna siła dopiero po kilku godzinach bez zmian.** Przez pierwsze tygodnie dociągaj śrubę przed każdą sesją.
+1. **Dry fit, no motor.** Slide B into A by hand. Measure the gap between the tongue front and the tower wall: it should be 2–3 mm. Below 1 mm → increase `fit_clr` by 0.05–0.10 and reprint B. Above 4 mm → decrease it.
+2. **Screw.** It must turn by hand along its whole length. If it binds, scale C in the slicer to 97–98 % in X and Z.
+3. **Play by hand, motor off.** Tighten C and try to move the wheel rotationally, sideways and towards you. There should be no noticeable movement or knocking.
+4. **Static test, motor off.** Load the rim with about 5 kg in several directions; check the tongue root and the tower for white stress marks.
+5. **FFB 10–20 %**, 10 minutes, gentle moves. Then remove the wheel and inspect the wedge walls, the screw and the gap from step 1.
+6. **Increase force gradually** (30 → 50 → 70 %), inspecting after each step and checking that the screw hasn't loosened.
+7. **Full force only after a few hours without changes.** For the first weeks, retighten the screw before each session.
 
-Podczas prób pod napięciem nie trzymaj palców przy mechanizmie i pokrętle. Przerwij test, jeśli pojawi się stuk, luz, biała rysa albo śruba daje się dokręcić wyraźnie dalej niż poprzednio.
+During powered tests keep your fingers away from the mechanism and the knob. Stop the test if you hear a knock, feel play, see a white stress mark, or the screw can be tightened noticeably further than before.
 
-## Sprawdź przed drukiem dla własnej kierownicy
+## Check before printing for your wheel
 
-1. **Flansza** – projekt pasuje do `flansza (3)` i `flansza2` (ten sam rozstaw 6 otworów na Ø70).
-2. **Śruby kierownicy to M5.** Jeśli masz M6, zmień `a_hole_d`, `a_cbore_d`, `b_hole_d`, `b_nut_af` w `build_qr.py`.
-3. **Śruby wystają za tył kierownicy najwyżej 8–10 mm.**
-4. **Tył kierownicy jest płaski na średnicy 86 mm** i nic nie wystaje ze środka.
+1. **Flange** – the design fits `flange_a` and `flange_b` (same 6-hole pattern on Ø70).
+2. **The wheel screws are M5.** If yours are M6, change `a_hole_d`, `a_cbore_d`, `b_hole_d`, `b_nut_af` in `build_qr.py`.
+3. **The screws stick out of the back of the wheel by 8–10 mm at most.**
+4. **The back of the wheel is flat across 86 mm** and nothing sticks out of the centre.

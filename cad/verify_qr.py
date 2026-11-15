@@ -1,4 +1,4 @@
-"""Weryfikacja geometrii zespolu QR w aktywnym dokumencie Fusion (tylko odczyt)."""
+"""Checks the QR assembly geometry in the active Fusion document (read only)."""
 import adsk.core, adsk.fusion, math
 
 
@@ -51,10 +51,10 @@ def run(_context: str):
         m.setToRotation(math.radians(deg), adsk.core.Vector3D.create(0, 1, 0), adsk.core.Point3D.create(0, 0, lock_z))
         return m
 
-    print('--- kolizje w pozycji nominalnej [mm3]')
+    print('--- collisions in the nominal position [mm3]')
     print('A-B', round(inter(A, B), 3), last['bb'])
     print('A-C', round(inter(A, C), 3), ' B-C', round(inter(B, C), 3))
-    print('--- faza gwintu: obrot sruby wokol osi -> kolizja z B / z A')
+    print('--- thread phase: screw rotated about its axis -> collision with B / A')
     best = None
     for a in range(0, 360, 5):
         vb = inter(B, C, Ry_axis(a)); bbx = last['bb']
@@ -63,29 +63,29 @@ def run(_context: str):
             best = (a, vb + va)
         if vb < 3.0:
             print('  %3d deg: B %.3f  A %.3f %s' % (a, vb, va, bbx))
-    print('najlepszy kat', best)
-    print('--- dosuwanie B w kierunku -Y (klin): kolizja A-B')
+    print('best angle', best)
+    print('--- pushing B along -Y (wedge): A-B collision')
     for s in (0.0, -0.2, -0.4, -0.6, -1.0, -2.0):
         print('  dy=%5.1f : %.3f' % (s, inter(A, B, T(dy=s))))
-    print('--- wysuwanie B w kierunku +Y (bez sruby): kolizja A-B')
+    print('--- sliding B out along +Y (no screw): A-B collision')
     for s in range(0, 31, 3):
         print('  dy=%3d : %.3f' % (s, inter(A, B, T(dy=s))))
-    print('--- podnoszenie B w osi Z przy roznych wysunieciach')
+    print('--- lifting B along Z at different slide-out positions')
     for s in (0, 4, 8, 12, 14, 15, 16, 18):
         vals = [inter(A, B, T(dy=s, dz=z)) for z in (0.5, 2, 5, 9)]
         print('  dy=%2d : dz 0.5/2/5/9 -> %s' % (s, ' '.join('%.2f' % x for x in vals)))
-    print('--- blokada ksztaltowa w pozycji nominalnej')
-    print('  obrot +0.5 deg wokol Z:', round(inter(A, B, Rz(0.5)), 3), '  -0.5 deg:', round(inter(A, B, Rz(-0.5)), 3))
-    print('  przesuw X +0.3:', round(inter(A, B, T(dx=0.3)), 3), '  X -0.3:', round(inter(A, B, T(dx=-0.3)), 3))
-    print('--- sruba: wykrecanie (ruch -Y) kolizja z B (przy najlepszej fazie pomijamy obrot -> tylko zasieg)')
+    print('--- form lock in the nominal position')
+    print('  rotate +0.5 deg about Z:', round(inter(A, B, Rz(0.5)), 3), '  -0.5 deg:', round(inter(A, B, Rz(-0.5)), 3))
+    print('  shift X +0.3:', round(inter(A, B, T(dx=0.3)), 3), '  X -0.3:', round(inter(A, B, T(dx=-0.3)), 3))
+    print('--- screw: unscrewing (-Y) vs B (rotation ignored at the best phase -> reach only)')
     for s in (0, -6, -9, -9.5, -10, -12):
         t = tmp.copy(C)
         tmp.transform(t, T(dy=s))
         bb = t.boundingBox
-        print('  dy=%5.1f : czubek sruby y=%.2f' % (s, bb.maxPoint.y * 10))
+        print('  dy=%5.1f : screw tip y=%.2f' % (s, bb.maxPoint.y * 10))
     bbB = None
     for f in B.faces:
         g = f.geometry
         if g.objectType == adsk.core.Plane.classType() and abs(abs(g.normal.y) - 1) < 1e-6 and abs(g.origin.y * 10 - up['qr_y_tip'] * 10) < 1e-3:
             bbB = f.boundingBox
-    print('czolo piora B (y_tip):', None if bbB is None else '[x %.2f..%.2f, z %.2f..%.2f]' % (bbB.minPoint.x * 10, bbB.maxPoint.x * 10, bbB.minPoint.z * 10, bbB.maxPoint.z * 10))
+    print('part B tongue face (y_tip):', None if bbB is None else '[x %.2f..%.2f, z %.2f..%.2f]' % (bbB.minPoint.x * 10, bbB.maxPoint.x * 10, bbB.minPoint.z * 10, bbB.maxPoint.z * 10))
